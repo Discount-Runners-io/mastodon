@@ -1,34 +1,44 @@
 name: Test container image build
 on:
-  pull_request:
-    paths:
-      - .github/workflows/build-nightly.yml
-      - .github/workflows/build-push-pr.yml
-      - .github/workflows/build-releases.yml
-      - .github/workflows/test-image-build.yml
-      - Dockerfile
-      - streaming/Dockerfile
-      - .dockerignore
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: Runner label for ubuntu-latest / ubuntu-24.04 jobs
+        type: string
+        default: ubuntu-latest
+      slim_runner:
+        description: Runner label for ubuntu-slim jobs
+        type: string
+        default: ubuntu-slim
+      arm_runner:
+        description: Runner label for ubuntu-*-arm jobs
+        type: string
+        default: ubuntu-24.04-arm
+      tag:
+        description: Benchmark run id, echoed into the run name
+        type: string
+        default: ''
 permissions:
   contents: read
 
 jobs:
   build-image:
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-      cancel-in-progress: true
-
     uses: ./.github/workflows/build-container-image.yml
     with:
       file_to_build: Dockerfile
       cache: true
 
+      runner: ${{ inputs.runner }}
+      slim_runner: ${{ inputs.slim_runner }}
+      arm_runner: ${{ inputs.arm_runner }}
+      tag: ${{ inputs.tag }}
   build-image-streaming:
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-streaming
-      cancel-in-progress: true
-
     uses: ./.github/workflows/build-container-image.yml
     with:
       file_to_build: streaming/Dockerfile
       cache: true
+      runner: ${{ inputs.runner }}
+      slim_runner: ${{ inputs.slim_runner }}
+      arm_runner: ${{ inputs.arm_runner }}
+      tag: ${{ inputs.tag }}
+run-name: Test container image build ${{ inputs.tag }} ${{ inputs.runner }}
