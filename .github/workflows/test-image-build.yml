@@ -26,7 +26,7 @@ jobs:
     uses: ./.github/workflows/build-container-image.yml
     with:
       file_to_build: Dockerfile
-      cache: true
+      cache: false
 
       runner: ${{ inputs.runner }}
       slim_runner: ${{ inputs.slim_runner }}
@@ -36,7 +36,7 @@ jobs:
     uses: ./.github/workflows/build-container-image.yml
     with:
       file_to_build: streaming/Dockerfile
-      cache: true
+      cache: false
       runner: ${{ inputs.runner }}
       slim_runner: ${{ inputs.slim_runner }}
       arm_runner: ${{ inputs.arm_runner }}
