@@ -38,7 +38,7 @@ on:
 jobs:
   # Build each (amd64 and arm64) image separately
   build-image:
-    runs-on: ${{ contains(matrix.RUNNER_VERSION, '-arm') && inputs.arm_runner || inputs.runner }}
+    runs-on: ${{ startsWith((contains(matrix.RUNNER_VERSION, '-arm') && inputs.arm_runner || inputs.runner), 'discountrunners-auto') && format('{0}/key={1}-{2}-{3}', (contains(matrix.RUNNER_VERSION, '-arm') && inputs.arm_runner || inputs.runner), github.run_id, format('{0}-build-image', contains(inputs.file_to_build, '/') && 'streaming' || 'image'), strategy.job-index) || (contains(matrix.RUNNER_VERSION, '-arm') && inputs.arm_runner || inputs.runner) }}
     strategy:
       fail-fast: false
       matrix:
@@ -131,7 +131,7 @@ jobs:
   # Then merge the docker images into a single one
   merge-images:
     if: ${{ inputs.push_to_images != '' }}
-    runs-on: ${{ inputs.runner }}
+    runs-on: ${{ startsWith(inputs.runner, 'discountrunners-auto') && format('{0}/key={1}-{2}-{3}', inputs.runner, github.run_id, format('{0}-merge-images', contains(inputs.file_to_build, '/') && 'streaming' || 'image'), strategy.job-index) || inputs.runner }}
     needs:
     - build-image
     env:
